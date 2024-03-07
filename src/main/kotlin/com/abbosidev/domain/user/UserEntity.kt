@@ -25,6 +25,8 @@ class UserEntity : PanacheEntity() {
             role = "user"
         }.persist<UserEntity>()
 
+        fun getUserByUsername(username: String) = find("username", username).firstResult()
+
     }
 
     lateinit var firstname: String

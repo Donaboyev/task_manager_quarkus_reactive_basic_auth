@@ -12,4 +12,6 @@ class UserService {
             else UserEntity.save(user)
         }
     }
+
+    fun login(username: String) = UserEntity.getUserByUsername(username)
 }
