@@ -10,4 +10,6 @@ class TaskService {
     fun saveNewTask(username: String, task: TaskDto) = TaskEntity.save(username, task)
 
     fun getTaskById(id: Long) = TaskEntity.findById(id)
+
+    fun updateTask(id: Long, task: TaskDto) = TaskEntity.updateTask(id, task)
 }

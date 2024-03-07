@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni
 import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
+import jakarta.ws.rs.PUT
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.core.Context
@@ -54,6 +55,25 @@ class TaskResource(private val taskService: TaskService) {
             .continueWith {
                 val message = HashMap<String, String>().apply {
                     put("message", "Task with $id id does not exist")
+                }
+                Response.status(BAD_REQUEST).entity(message).build()
+            }
+
+    @WithTransaction
+    @RolesAllowed("user")
+    @PUT
+    @Path("/{id}")
+    fun updateTaskById(@PathParam("id") id: Long, task: TaskDto): Uni<Response> =
+        taskService
+            .updateTask(id, task)
+            .onItem()
+            .ifNotNull()
+            .transform { entity -> Response.ok(entity).build() }
+            .onItem()
+            .ifNull()
+            .continueWith {
+                val message = HashMap<String, String>().apply {
+                    put("message", "Task with $id id does not exist or something went wrong")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }

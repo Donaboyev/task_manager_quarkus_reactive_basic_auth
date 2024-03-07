@@ -27,6 +27,19 @@ class TaskEntity : PanacheEntity() {
                     }.persist()
             }
 
+        fun updateTask(id: Long, task: TaskDto): Uni<TaskEntity?> = update(
+            "title = ?1, description = ?2, dueDate = ?3 WHERE id = ?4",
+            task.title,
+            task.description,
+            task.dueDate,
+            id
+        )
+            .flatMap { updated ->
+                if (updated > 0)
+                    findById(id)
+                else
+                    Uni.createFrom().nullItem()
+            }
 
     }
 
