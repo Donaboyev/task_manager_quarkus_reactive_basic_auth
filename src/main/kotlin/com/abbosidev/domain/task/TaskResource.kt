@@ -6,6 +6,7 @@ import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.SecurityContext
@@ -34,6 +35,25 @@ class TaskResource(private val taskService: TaskService) {
             .continueWith {
                 val message = HashMap<String, String>().apply {
                     put("message", "Something went wrong")
+                }
+                Response.status(BAD_REQUEST).entity(message).build()
+            }
+
+    @WithTransaction
+    @RolesAllowed("user")
+    @GET
+    @Path("/{id}")
+    fun getTaskById(@PathParam("id") id: Long): Uni<Response> =
+        taskService
+            .getTaskById(id)
+            .onItem()
+            .ifNotNull()
+            .transform { entity -> Response.ok(entity).build() }
+            .onItem()
+            .ifNull()
+            .continueWith {
+                val message = HashMap<String, String>().apply {
+                    put("message", "Task with $id id does not exist")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }
