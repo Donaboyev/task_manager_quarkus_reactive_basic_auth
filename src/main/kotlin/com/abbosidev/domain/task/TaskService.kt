@@ -12,4 +12,6 @@ class TaskService {
     fun getTaskById(id: Long) = TaskEntity.findById(id)
 
     fun updateTask(id: Long, task: TaskDto) = TaskEntity.updateTask(id, task)
+
+    fun deleteTask(id: Long) = TaskEntity.deleteById(id)
 }

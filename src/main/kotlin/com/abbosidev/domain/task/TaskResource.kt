@@ -3,6 +3,7 @@ package com.abbosidev.domain.task
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction
 import io.smallrye.mutiny.Uni
 import jakarta.annotation.security.RolesAllowed
+import jakarta.ws.rs.DELETE
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.PUT
@@ -73,8 +74,29 @@ class TaskResource(private val taskService: TaskService) {
             .ifNull()
             .continueWith {
                 val message = HashMap<String, String>().apply {
-                    put("message", "Task with $id id does not exist or something went wrong")
+                    put("message", "Task with $id id does not exist")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }
+
+    @WithTransaction
+    @RolesAllowed("user")
+    @DELETE
+    @Path("/{id}")
+    fun deleteTask(@PathParam("id") id: Long): Uni<Response> = taskService
+        .deleteTask(id)
+        .onItem()
+        .transform { deleted ->
+            if (deleted) {
+                val message = HashMap<String, String>().apply {
+                    put("message", "Successfully deleted task with $id id")
+                }
+                Response.ok(message).build()
+            } else {
+                val message = HashMap<String, String>().apply {
+                    put("message", "Task with $id id does not exist")
+                }
+                Response.status(BAD_REQUEST).entity(message).build()
+            }
+        }
 }
