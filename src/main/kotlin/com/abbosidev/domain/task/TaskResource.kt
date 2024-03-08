@@ -55,7 +55,7 @@ class TaskResource(private val taskService: TaskService) {
             .ifNull()
             .continueWith {
                 val message = HashMap<String, String>().apply {
-                    put("message", "Task with $id id does not exist")
+                    put("message", "Task with $id id does not exist.")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }
@@ -74,7 +74,7 @@ class TaskResource(private val taskService: TaskService) {
             .ifNull()
             .continueWith {
                 val message = HashMap<String, String>().apply {
-                    put("message", "Task with $id id does not exist")
+                    put("message", "Task with $id id does not exist.")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }
@@ -89,12 +89,12 @@ class TaskResource(private val taskService: TaskService) {
         .transform { deleted ->
             if (deleted) {
                 val message = HashMap<String, String>().apply {
-                    put("message", "Successfully deleted task with $id id")
+                    put("message", "Task with $id id successfully deleted.")
                 }
                 Response.ok(message).build()
             } else {
                 val message = HashMap<String, String>().apply {
-                    put("message", "Task with $id id does not exist")
+                    put("message", "Task with $id id does not exist.")
                 }
                 Response.status(BAD_REQUEST).entity(message).build()
             }

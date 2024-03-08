@@ -8,9 +8,13 @@ import org.hamcrest.core.Is.`is`
 import org.jboss.resteasy.reactive.RestResponse.StatusCode.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 
 @QuarkusTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class UserResourceTest {
 
     private val tempFirstname = "TEMP_FIRSTNAME"
@@ -25,8 +29,13 @@ class UserResourceTest {
     private val idDoesNotExist = "id does not exist."
     private val dummyUserId = -1
 
+    companion object {
+        var currentUserId = -1L
+    }
+
+    @Order(1)
     @Test
-    fun `test for registering, login and deleting user`() {
+    fun `test for registering and deleting user`() {
         val user = UserDto(
             firstname = tempFirstname,
             lastname = tempLastname,
@@ -46,6 +55,9 @@ class UserResourceTest {
             .`as`(getUserEntityTypeRef())
 
         assertNotNull(savedUser.id)
+
+        currentUserId = savedUser.id!!
+
         assertEquals(savedUser.firstname, tempFirstname)
         assertEquals(savedUser.lastname, tempLastname)
         assertEquals(savedUser.username, tempUsername)
@@ -59,7 +71,11 @@ class UserResourceTest {
             .statusCode(BAD_REQUEST)
             .contentType(APPLICATION_JSON)
             .body("message", `is`(userAlreadyExists))
+    }
 
+    @Order(2)
+    @Test
+    fun `test for login`() {
         val loggedInUser = given()
             .auth()
             .preemptive()
@@ -85,12 +101,16 @@ class UserResourceTest {
             .get("/api/v1/user/login")
             .then()
             .statusCode(UNAUTHORIZED)
+    }
 
+    @Order(3)
+    @Test
+    fun `test for deleting`() {
         given()
             .auth()
             .preemptive()
             .basic(dummyUsername, dummyPassword)
-            .pathParams("id", savedUser.id)
+            .pathParams("id", currentUserId)
             .`when`()
             .delete("/api/v1/user/{id}")
             .then()
@@ -112,19 +132,19 @@ class UserResourceTest {
             .auth()
             .preemptive()
             .basic(tempUsername, tempPassword)
-            .pathParams("id", savedUser.id)
+            .pathParams("id", currentUserId)
             .`when`()
             .delete("/api/v1/user/{id}")
             .then()
             .statusCode(OK)
             .contentType(APPLICATION_JSON)
-            .body("message", `is`("$userWith ${savedUser.id} $idSuccessfullyDeleted"))
+            .body("message", `is`("$userWith $currentUserId $idSuccessfullyDeleted"))
 
         given()
             .auth()
             .preemptive()
             .basic(tempUsername, tempPassword)
-            .pathParams("id", savedUser.id)
+            .pathParams("id", currentUserId)
             .`when`()
             .delete("/api/v1/user/{id}")
             .then()
