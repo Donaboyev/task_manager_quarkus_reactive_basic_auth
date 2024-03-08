@@ -1,6 +1,6 @@
-package com.abbosidev
+package com.abbosidev.domain.user
 
 import io.quarkus.test.junit.QuarkusIntegrationTest
 
 @QuarkusIntegrationTest
-class ExampleResourceIT : ExampleResourceTest()
+class UserResourceIT : UserResourceTest()

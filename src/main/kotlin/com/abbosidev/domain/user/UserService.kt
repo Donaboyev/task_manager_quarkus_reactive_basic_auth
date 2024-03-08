@@ -14,4 +14,6 @@ class UserService {
     }
 
     fun login(username: String) = UserEntity.getUserByUsername(username)
+
+    fun deleteUserById(id:Long) = UserEntity.deleteById(id)
 }
