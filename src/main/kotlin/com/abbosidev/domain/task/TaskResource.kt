@@ -1,8 +1,10 @@
 package com.abbosidev.domain.task
 
+import com.abbosidev.infrastructure.util.ifNullFailWith
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction
 import io.smallrye.mutiny.Uni
 import jakarta.annotation.security.RolesAllowed
+import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.DELETE
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
@@ -48,17 +50,8 @@ class TaskResource(private val taskService: TaskService) {
     fun getTaskById(@PathParam("id") id: Long): Uni<Response> =
         taskService
             .getTaskById(id)
-            .onItem()
-            .ifNotNull()
-            .transform { entity -> Response.ok(entity).build() }
-            .onItem()
-            .ifNull()
-            .continueWith {
-                val message = HashMap<String, String>().apply {
-                    put("message", "Task with $id id does not exist.")
-                }
-                Response.status(BAD_REQUEST).entity(message).build()
-            }
+            .ifNullFailWith{ BadRequestException("Task with $id id does not exist.") }
+            .map { entity -> Response.ok(entity).build() }
 
     @WithTransaction
     @RolesAllowed("user")
