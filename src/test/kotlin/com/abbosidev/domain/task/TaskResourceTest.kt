@@ -3,10 +3,6 @@ package com.abbosidev.domain.task
 import com.abbosidev.domain.user.UserDto
 import com.abbosidev.domain.user.UserEntity
 import io.quarkus.test.junit.QuarkusTest
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
 import io.restassured.RestAssured.given
 import io.restassured.common.mapper.TypeRef
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
@@ -14,6 +10,10 @@ import org.hamcrest.core.Is.`is`
 import org.jboss.resteasy.reactive.RestResponse.StatusCode.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import java.time.LocalDate
 
 @QuarkusTest
